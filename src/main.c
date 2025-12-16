@@ -27,10 +27,10 @@ GBSTMR TMR_CPU_LOAD;
 void UpdateCPULoad() {
     extern char CFG_CPU_LOAD_COLOR_208[], CFG_CPU_LOAD_COLOR_104[], CFG_CPU_LOAD_COLOR_52[];
 
-    static int x = 0;
+    static int w = 0;
     uint8_t *bitmap = IMG_CPU_LOAD.bitmap;
-    if (x >= IMG_CPU_LOAD.w) {
-        x = IMG_CPU_LOAD.w - 1;
+    if (w >= IMG_CPU_LOAD.w) {
+        w = IMG_CPU_LOAD.w - 1;
         for (int x = 1; x < IMG_CPU_LOAD.w; x++) {
             for (int y = 0; y < IMG_CPU_LOAD.h; y++) {
                 const int i = (x * 4) + (y * IMG_CPU_LOAD.w * 4);
@@ -42,7 +42,7 @@ void UpdateCPULoad() {
     float h_load = (float)IMG_CPU_LOAD.h * (float)GetCPULoad() / 100 + 0.5f;
     for (int y = 0; y < IMG_CPU_LOAD.h; y++) {
         const int max_y = IMG_CPU_LOAD.h - MAX((int)h_load, 1);
-        const int i = (x * 4) + (y * IMG_CPU_LOAD.w * 4);
+        const int i = (w * 4) + (y * IMG_CPU_LOAD.w * 4);
         if (y < max_y) {
             zeromem(&bitmap[i], 4);
         } else {
@@ -61,8 +61,7 @@ void UpdateCPULoad() {
             bitmap[i + 3] = (uint8_t)((float)color[3] * 2.55f + 0.5f);
         }
     }
-    x++;
-
+    w++;
 }
 
 void UpdateCPULoadProc() {
