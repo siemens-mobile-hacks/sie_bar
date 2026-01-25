@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/param.h>
-#include "config_loader.h"
+#include "config.h"
 
 #define CPU_LOAD_ICON 10000
 
@@ -15,9 +15,6 @@ typedef struct {
     void (*f)(short *num);
 } ICONBAR_H;
 
-extern int CFG_CPU_LOAD_ENABLED, CFG_CPU_LOAD_WIDTH, CFG_CPU_LOAD_HEIGHT;
-extern int CFG_COUNTDOWN_ENABLED, CFG_COUNTDOWN_ICON;
-
 const int minus11 =- 11;
 unsigned short maincsm_name_body[140];
 
@@ -25,8 +22,6 @@ IMGHDR IMG_CPU_LOAD;
 GBSTMR TMR_CPU_LOAD;
 
 void UpdateCPULoad() {
-    extern char CFG_CPU_LOAD_COLOR_208[], CFG_CPU_LOAD_COLOR_104[], CFG_CPU_LOAD_COLOR_52[];
-
     static int w = 0;
     uint8_t *bitmap = IMG_CPU_LOAD.bitmap;
     if (w >= IMG_CPU_LOAD.w) {
@@ -49,11 +44,11 @@ void UpdateCPULoad() {
             char *color;
             uint8_t clock = GetCPUClock();
             if (clock == 208) {
-                color = CFG_CPU_LOAD_COLOR_208;
+                color = CFG.cpu_load_color_208;
             } else if (clock == 104) {
-                color = CFG_CPU_LOAD_COLOR_104;
+                color = CFG.cpu_load_color_104;
             } else {
-                color = CFG_CPU_LOAD_COLOR_52;
+                color = CFG.cpu_load_color_52;
             }
             bitmap[i + 0] = color[2];
             bitmap[i + 1] = color[1];
@@ -77,12 +72,12 @@ void AddCPULoadToIconBar(short *num) {
 }
 
 void AddIconBar(short *num) {
-    if (CFG_CPU_LOAD_ENABLED) {
+    if (CFG.cpu_load_enabled) {
         AddCPULoadToIconBar(num);
     }
-    if (CFG_COUNTDOWN_ENABLED) {
+    if (CFG.countdown_enabled) {
         if (Countdown_IsEnabled()) {
-            AddIconToIconBar(CFG_COUNTDOWN_ICON, num);
+            AddIconToIconBar(CFG.countdown_icon, num);
         }
     }
 }
@@ -90,8 +85,8 @@ void AddIconBar(short *num) {
 void InitCPULoadImage() {
     LockSched();
     PIT_ResetImage(CPU_LOAD_ICON);
-    IMG_CPU_LOAD.w = CFG_CPU_LOAD_WIDTH;
-    IMG_CPU_LOAD.h = CFG_CPU_LOAD_HEIGHT;
+    IMG_CPU_LOAD.w = CFG.cpu_load_width;
+    IMG_CPU_LOAD.h = CFG.cpu_load_height;
     IMG_CPU_LOAD.bpnum = IMGHDR_TYPE_BGRA8888;
     size_t size = CalcBitmapSize((short)IMG_CPU_LOAD.w, (short)IMG_CPU_LOAD.h, IMG_CPU_LOAD.bpnum);
     IMG_CPU_LOAD.bitmap = realloc(IMG_CPU_LOAD.bitmap, size); //NOLINT
@@ -101,7 +96,6 @@ void InitCPULoadImage() {
 }
 
 int OnMessage(CSM_RAM *data, GBS_MSG *msg) {
-    extern char CFG_PATH[];
     if (msg->msg == MSG_RECONFIGURE_REQ) {
         if (strcmp(CFG_PATH, msg->data0) == 0) {
             InitConfig();
