@@ -87,7 +87,7 @@ void InitCPULoadImage() {
     PIT_ResetImage(CPU_LOAD_ICON);
     IMG_CPU_LOAD.w = CFG.cpu_load_width;
     IMG_CPU_LOAD.h = CFG.cpu_load_height;
-    IMG_CPU_LOAD.bpnum = IMGHDR_TYPE_BGRA8888;
+    IMG_CPU_LOAD.bpnum = IMGHDR_TYPE_ARGB8888;
     size_t size = CalcBitmapSize((short)IMG_CPU_LOAD.w, (short)IMG_CPU_LOAD.h, IMG_CPU_LOAD.bpnum);
     IMG_CPU_LOAD.bitmap = realloc(IMG_CPU_LOAD.bitmap, size); //NOLINT
     zeromem(IMG_CPU_LOAD.bitmap, (int)size);
